@@ -57,8 +57,8 @@ app.get("/", function (req, res) {
 
 // ---------------------------------------------------------------------------
 
-const port = process.env.PORT || 5000;
-const server = app.listen(port || 5000, () => {
+const port = process.env.PORT || 80;
+const server = app.listen(port || 80, () => {
   console.log("========== starting Middleware server ==========");
   console.log("Server listening on port:", port);
 });
