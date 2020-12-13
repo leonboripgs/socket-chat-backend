@@ -2,8 +2,10 @@ const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 
 mongoose.set("useFindAndModify", false);
-let uri =
-  "mongodb://localhost:27017/ChatDB";
+// let uri =
+//   "mongodb+srv://root:intriguing@cluster0.jcsfs.mongodb.net/chatdata?retryWrites=true&w=majority";
+  let uri =
+    "mongodb://localhost:27017/ChatDB";
 mongoose.connect(uri, {
   autoIndex: false,
   useNewUrlParser: true,

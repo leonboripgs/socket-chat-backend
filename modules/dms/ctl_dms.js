@@ -1,5 +1,7 @@
 var MessageSchema = require('../../schemas/message_schema.js');
 var UserSchema = require('../../schemas/user_schema.js');
+var RoomSchema = require('../../schemas/room_schema')
+const crypto = require('crypto')
 var multer = require('multer');
 
 const Storage = multer.diskStorage({
@@ -103,21 +105,56 @@ module.exports.getDmsList = async function (req, res) {
 
 module.exports.getConvo = async function (req, res) {
 	try {
-		var contactUser = await UserSchema.findOne({"uuid": req.body.contactuuid});
-		if(!contactUser) {
-			res.status(201).json({success: false, message: "User does not exist"});
-			return;
+		var room = await RoomSchema.findOne({$or: [{"user": req.body.user, "other_user": req.body.other_user}, {"user": req.body.other_user, "other_user": req.body.user}]});
+		console.log(room);
+		if (!room) {
+			var symmetric = "";
+			var characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789S"
+			for ( let i = 0; i < 16; i++) {
+				symmetric += characters.charAt(Math.floor(Math.random() * characters.length));
+			}
+			let roomInfo = {
+				user: req.body.user,
+				other_user: req.body.other_user,
+				symmetric: symmetric
+			}
+			var room = await RoomSchema.create(roomInfo);
+			res.status(201).json({success: true, room, convo: []})
+		} else {
+			var messages = await MessageSchema.find({"roomId": room._id});
+			res.status(201).json({success: true, room, convo: messages})
 		}
-		var convo = await MessageSchema.find({$or: [{"from": req.body.uuid, "to": req.body.contactuuid}, 
-													{"from": req.body.contactuuid, "to": req.body.uuid}]});
-		console.log("convo", convo);
-		res.status(201).json({success: true, convo: convo});
+	} catch (error) {
+		console.error("get rooms");
+		console.log(error);
+		res.status(401).json({success: false, error: error});
+	}
+}
+
+module.exports.getRooms = async function (req, res) {
+	try {
+		var rooms = await RoomSchema.find({$or: [{"user": req.body.user}, {"other_user": req.body.user}]});
+		// if(rooms.length == 0) {
+		// 	res.status(201).json({success: false, message: "Room does not exist"});
+		// 	return;
+		// }
+		var roomsInfo = [];
+		for (let i = 0 ; i < rooms.length; i++) {
+			var otherUser = rooms[i].user == req.body.user ? rooms[i].other_user : rooms[i].user;
+			var lastMsg = await MessageSchema.findOne({'roomId': rooms[i]._id}, {}, {sort: {'created_at': -1}});
+			if (lastMsg) {
+				var otherUserInfo = await UserSchema.findOne({'uuid': otherUser});
+				roomsInfo.push({photo: otherUserInfo.photo, name: otherUserInfo.name, uuid: otherUserInfo.uuid, message: lastMsg.memo, date: lastMsg.updated_at, enc: rooms[i].symmetric});
+			}
+		}
+		res.status(201).json({success: true, contact_list: roomsInfo});
 	} catch(error) {
 		console.error("getConvo");
 		console.log(error);
 		res.status(401).json({success: false, error: error});
 	}
 }
+
 
 module.exports.sendDm = async function (req, res) {
 	upload(req, res,async function (err) {
@@ -131,24 +168,31 @@ module.exports.sendDm = async function (req, res) {
 		  }
 	  } else {
 			try {
+				let room = await RoomSchema.findOne({"_id": req.body.roomId});
+				if(!room) {
+					res.status(201).json({success: false, message: "Invalid room"});;
+					return;
+				}
 				let user = await UserSchema.findOne({"uuid": req.body.from});
 				if(!user) {
 					res.status(201).json({success: false, message: "From User does not exist"});;
 					return;
 				}
-				user = null;
-				user = await UserSchema.findOne({"uuid": req.body.to});
-				if(!user) {
-					res.status(201).json({success: false, message: "To User does not exist"});;
-					return;
-				}
+
+				// console.log(req.body.memo);
+				// var symmetricUtf = Buffer.from(room.symmetric, 'utf8');
+				// const dechiper = crypto.createCipheriv('aes-128-gcm', symmetricUtf, symmetricUtf);
+				// var decrypted = Buffer.concat([dechiper.update(Buffer.from(req.body.memo, 'hex')), dechiper.final()]);
+				// console.log("=====================");
+				// console.log(decrypted.toString());
+
 				let attachImages = [];
 				// req.files.forEach(eachFile => {
 				// 	attachImages.push("dms/" + eachFile.filename);
 				// });
 				var msgInfo = {
+					roomId: req.body.roomId,
 					from: req.body.from,
-					to: req.body.to,
 					memo: req.body.memo,
 					attachImages: attachImages
 				}

@@ -4,8 +4,8 @@ autoIncrement = require('mongoose-auto-increment');
 autoIncrement.initialize(mongoose.connection);
 
 const MessageSchema = new Schema({
+  roomId: { type: String, required: true },
   from: { type: String, required: true },
-  to: { type: String, required: true },
   memo: String,
   status: String,
   attachImages: [],

@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
+const crypto = require("crypto") 
+const fs = require("fs")
 
 const fetch = require("node-fetch"); // node only; not needed in browsers
 const { TextEncoder, TextDecoder } = require("util"); // node only; native TextEncoder/Decoder
@@ -12,6 +14,30 @@ require("./config/db_connection.js");
 
 const AccountRouter = require("./modules/account/router");
 const MessageRouter = require("./modules/dms/router");
+
+const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+	// The standard secure default length for RSA keys is 2048 bits
+  modulusLength: 2048,
+  publicKeyEncoding: {
+    type: 'pkcs1',
+    format: 'pem'
+  }, 
+  privateKeyEncoding: { 
+    type: 'pkcs1', 
+    format: 'pem', 
+    cipher: 'aes-256-cbc', 
+    passphrase: ''
+  } 
+});
+
+fs.writeFile('pbKey', publicKey, 'utf8', function (err) {
+  if (err) return console.log("Error saving publicKey", err)
+  console.log('Public Key created')
+})
+fs.writeFile('pvKey', privateKey, 'utf8', function (err) {
+  if (err) return console.log("Error saving privateKey", err)
+  console.log('Public Key created')
+})
 
 let app = express();
 
@@ -60,11 +86,12 @@ io.getSocket().on("connection", function (socket) {
   })
 
   socket.on('send:message', function (data) {
-    onlineUsers.hasKey
+    console.log(data)
     if ((data.to in onlineUsers) && onlineUsers[data.to].socket) {
       console.log(data)
       console.log("emit receive:message - ", data.to)
       onlineUsers[data.to].socket.emit("receive:message", data)
+      onlineUsers[data.to].socket.emit("receive:message-contact", data)
     } else {
       console.log("can not find socket user")
     }

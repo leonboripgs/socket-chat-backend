@@ -11,5 +11,7 @@ router.use(function timeLog (req, res, next) {
 // Account
 router.get('/get-all', _account.getAllUserData);
 router.post('/check-uuid', _account.checkIfPhoneAllowed);
+router.get('/enc-pub', _account.getPbKey);
+router.post('/set-symmetric-key', _account.setSymmetricKey);
 
 module.exports = router;
