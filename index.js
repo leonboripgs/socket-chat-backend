@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
-const crypto = require("crypto") 
+const { generateKeyPairSync } = require("crypto") 
 const fs = require("fs")
 
 const fetch = require("node-fetch"); // node only; not needed in browsers
@@ -15,7 +15,7 @@ require("./config/db_connection.js");
 const AccountRouter = require("./modules/account/router");
 const MessageRouter = require("./modules/dms/router");
 
-const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+const { publicKey, privateKey } = generateKeyPairSync("rsa", {
 	// The standard secure default length for RSA keys is 2048 bits
   modulusLength: 2048,
   publicKeyEncoding: {
@@ -36,7 +36,7 @@ fs.writeFile('pbKey', publicKey, 'utf8', function (err) {
 })
 fs.writeFile('pvKey', privateKey, 'utf8', function (err) {
   if (err) return console.log("Error saving privateKey", err)
-  console.log('Public Key created')
+  console.log('Private Key created')
 })
 
 let app = express();
