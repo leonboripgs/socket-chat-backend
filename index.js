@@ -57,8 +57,8 @@ app.get("/", function (req, res) {
 
 // ---------------------------------------------------------------------------
 
-const port = process.env.PORT || 80;
-const server = app.listen(port || 80, () => {
+const port = process.env.PORT || 5000;
+const server = app.listen(port, () => {
   console.log("========== starting Middleware server ==========");
   console.log("Server listening on port:", port);
 });
@@ -72,6 +72,7 @@ io.getSocket().on("connection", function (socket) {
   console.log("socket client connected: id=>" + socket.id);
 
   socket.on("connect-user", function (data) {
+    console.log(data);
     onlineUsers[data] = {
       socket: socket,
       state: true
@@ -86,18 +87,12 @@ io.getSocket().on("connection", function (socket) {
   })
 
   socket.on('send:message', function (data) {
-    console.log(data)
     if ((data.to in onlineUsers) && onlineUsers[data.to].socket) {
       console.log(data)
-      console.log("emit receive:message - ", data.to)
       onlineUsers[data.to].socket.emit("receive:message", data)
       onlineUsers[data.to].socket.emit("receive:message-contact", data)
     } else {
       console.log("can not find socket user")
     }
   })
-
-  socket.on("newMessage", function (data) {
-    console.log("new message arrived", data);
-  });
 });

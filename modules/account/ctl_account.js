@@ -20,32 +20,29 @@ module.exports.getAllUserData = async function (req, res) {
 
 module.exports.checkIfPhoneAllowed = async function (req, res) {
   try {
-    console.log(req.body.uuid)
+    console.log(req.body.uuid);
+    console.log(req.body.pbkey);
     user = await UserSchema.findOne({uuid: req.body.uuid});
     if (!user) {
-      res.status(201).json({success: false, user: null});
+      var user = UserSchema.create({
+        name: "New User",
+        uuid: req.body.uuid,
+      });
+      res.status(201).json({success: false, user: user});
       return;
     }
     let resultDoc = {
       name: user.name,
       uuid: user.uuid,
       photo: user.photo,
-      data: user.symmetric
+      permission: user.permission
     };
-    if (user.symmetric != "") {
-      res.status(201).json({success: true, user: resultDoc});
-      return;
-    }
-    fs.readFile('./pbKey', 'utf8', function (err, key) {
-      if (err) {
-        console.error("can not get public key of server")
-        res.status(201).json({success: false, user: null});
-        return;
-      }
-      resultDoc.data = key;
-      res.status(201).json({success: true, user: resultDoc});
-      return;
-    });
+    // var strBuffer = Buffer.from("abcde", "base64");
+    // var encrypted = crypto.publicEncrypt(req.body.pbkey, strBuffer);
+
+    // resultDoc.data = encrypted.toString("base64");
+    res.status(201).json({success: true, user: resultDoc});
+    return;
   } catch (error) {
     console.log(error);
     res.status(401).json({success: false, error: error});

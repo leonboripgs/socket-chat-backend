@@ -134,19 +134,24 @@ module.exports.getConvo = async function (req, res) {
 module.exports.getRooms = async function (req, res) {
 	try {
 		var rooms = await RoomSchema.find({$or: [{"user": req.body.user}, {"other_user": req.body.user}]});
-		// if(rooms.length == 0) {
-		// 	res.status(201).json({success: false, message: "Room does not exist"});
-		// 	return;
-		// }
 		var roomsInfo = [];
 		for (let i = 0 ; i < rooms.length; i++) {
 			var otherUser = rooms[i].user == req.body.user ? rooms[i].other_user : rooms[i].user;
 			var lastMsg = await MessageSchema.findOne({'roomId': rooms[i]._id}, {}, {sort: {'created_at': -1}});
 			if (lastMsg) {
 				var otherUserInfo = await UserSchema.findOne({'uuid': otherUser});
-				roomsInfo.push({photo: otherUserInfo.photo, name: otherUserInfo.name, uuid: otherUserInfo.uuid, message: lastMsg.memo, date: lastMsg.updated_at, enc: rooms[i].symmetric});
+				console.log(otherUserInfo)
+				roomsInfo.push({
+					photo: otherUserInfo.photo, 
+					name: otherUserInfo.name, 
+					uuid: otherUserInfo.uuid, 
+					message: lastMsg.memo,
+					date: lastMsg.updated_at, 
+					roomId: rooms[i]._id,
+					enc: rooms[i].symmetric});
 			}
 		}
+		console.log(roomsInfo)
 		res.status(201).json({success: true, contact_list: roomsInfo});
 	} catch(error) {
 		console.error("getConvo");
@@ -195,9 +200,9 @@ module.exports.sendDm = async function (req, res) {
 					from: req.body.from,
 					memo: req.body.memo,
 					attachImages: attachImages
-				}
-				console.log(attachImages);
+				};
 				var msg = await MessageSchema.create(msgInfo);
+				console.log(msg);
 				return res.status(200).json({
 					success: true,
 					msg: msg
