@@ -191,15 +191,16 @@ module.exports.sendDm = async function (req, res) {
 				// console.log("=====================");
 				// console.log(decrypted.toString());
 
-				let attachImages = [];
-				// req.files.forEach(eachFile => {
-				// 	attachImages.push("dms/" + eachFile.filename);
-				// });
+				let files = [];
+				req.files.forEach(eachFile => {
+					files.push("dms/" + eachFile.filename);
+				});
 				var msgInfo = {
 					roomId: req.body.roomId,
 					from: req.body.from,
 					memo: req.body.memo,
-					attachImages: attachImages
+					type: req.body.type ? req.body.type : "0",
+					files: files
 				};
 				var msg = await MessageSchema.create(msgInfo);
 				console.log(msg);

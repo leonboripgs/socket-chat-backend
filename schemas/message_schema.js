@@ -7,8 +7,9 @@ const MessageSchema = new Schema({
   roomId: { type: String, required: true },
   from: { type: String, required: true },
   memo: String,
+  type: { type: String, default: "0"},
   status: String,
-  attachImages: [],
+  files: [],
   created_at: { type: Date, default: Date.now()},
   updated_at: { type: Date, default: Date.now()},
   deleted: Boolean
