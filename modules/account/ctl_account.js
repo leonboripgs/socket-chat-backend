@@ -20,12 +20,12 @@ module.exports.getAllUserData = async function (req, res) {
 
 module.exports.checkIfPhoneAllowed = async function (req, res) {
   try {
-    console.log(req.body.uuid);
+    console.log(req.body);
     console.log(req.body.pbkey);
     user = await UserSchema.findOne({uuid: req.body.uuid});
     if (!user) {
       var user = UserSchema.create({
-        name: "New User",
+        name: req.body.name,
         uuid: req.body.uuid,
       });
       res.status(201).json({success: false, user: user});
