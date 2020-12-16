@@ -192,9 +192,10 @@ module.exports.sendDm = async function (req, res) {
 				// console.log(decrypted.toString());
 
 				let files = [];
-				req.files.forEach(eachFile => {
-					files.push("dms/" + eachFile.filename);
-				});
+				console.log(req.files);
+				// req.files.forEach(eachFile => {
+				// 	files.push("dms/" + eachFile.filename);
+				// });
 				var msgInfo = {
 					roomId: req.body.roomId,
 					from: req.body.from,
