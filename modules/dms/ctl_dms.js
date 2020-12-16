@@ -6,7 +6,7 @@ var multer = require('multer');
 
 const Storage = multer.diskStorage({
     destination(req, file, callback) {
-        callback(null, './uploads/dms');
+        callback(null, './uploads/');
     },
     filename(req, file, callback) {
         callback(null, `${file.originalname}`);
@@ -16,7 +16,7 @@ const Storage = multer.diskStorage({
 var upload = multer({
 	storage: Storage,
 	// limits: { fileSize: 10000000 }
-}).array('files[]', 10);
+}).single('attachment');
 
 
 // module.exports.getAllDms = async function (req, res) {
@@ -172,6 +172,7 @@ module.exports.sendDm = async function (req, res) {
 			res.json({success: false, message: 'The upload of the file could not be completed.'});
 		  }
 	  } else {
+		  console.log(req.file)
 			try {
 				let room = await RoomSchema.findOne({"_id": req.body.roomId});
 				if(!room) {
