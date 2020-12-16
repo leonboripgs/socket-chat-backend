@@ -9,7 +9,7 @@ const MessageSchema = new Schema({
   memo: String,
   type: { type: String, default: "0"},
   status: String,
-  files: [],
+  attachment: String,
   created_at: { type: Date, default: Date.now()},
   updated_at: { type: Date, default: Date.now()},
   deleted: Boolean

@@ -202,7 +202,7 @@ module.exports.sendDm = async function (req, res) {
 					from: req.body.from,
 					memo: req.body.memo,
 					type: req.body.type ? req.body.type : "0",
-					files: files
+					attachment: req.file ? req.file.path : ""
 				};
 				var msg = await MessageSchema.create(msgInfo);
 				console.log(msg);
