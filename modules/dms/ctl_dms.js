@@ -200,7 +200,7 @@ module.exports.sendDm = async function (req, res) {
 				var msgInfo = {
 					roomId: req.body.roomId,
 					from: req.body.from,
-					memo: req.body.memo,
+					memo: req.body.memo ? req.body.memo : "",
 					type: req.body.type ? req.body.type : "0",
 					attachment: req.file ? req.file.filename : ""
 				};
