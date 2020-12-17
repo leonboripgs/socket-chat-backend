@@ -146,6 +146,7 @@ module.exports.getRooms = async function (req, res) {
 					name: otherUserInfo.name, 
 					uuid: otherUserInfo.uuid, 
 					message: lastMsg.memo ? lastMsg.memo : "",
+					messageType: lastMsg.type,
 					date: lastMsg.updated_at, 
 					roomId: rooms[i]._id,
 					enc: rooms[i].symmetric});
