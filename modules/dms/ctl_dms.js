@@ -217,7 +217,7 @@ module.exports.sendDm = async function (req, res) {
 					from: req.body.from,
 					memo: req.body.memo ? req.body.memo : "",
 					type: req.body.type ? req.body.type : "0",
-					attachment: encryptedFileName.toString(),
+					attachment: req.file.filename? req.file.filename : ''//encryptedFileName.toString(),
 				};
 				var msg = await MessageSchema.create(msgInfo);
 				console.log(msg);
