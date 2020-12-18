@@ -198,12 +198,17 @@ module.exports.sendDm = async function (req, res) {
 				// req.files.forEach(eachFile => {
 				// 	files.push("dms/" + eachFile.filename);
 				// });
+
+				const cipher = crypto.createCipheriv('aes-128-gcm', room.symmetric, room.symmetric);
+				var encryptedFileName = "";
+				if (req.file.filename != "")
+					encryptedFileName = Buffer.concat([dechiper.update(Buffer.from(req.file.filename, 'hex')), cipher.final()]);
 				var msgInfo = {
 					roomId: req.body.roomId,
 					from: req.body.from,
 					memo: req.body.memo ? req.body.memo : "",
 					type: req.body.type ? req.body.type : "0",
-					attachment: req.file ? req.file.filename : ""
+					attachment: encryptedFileName,
 				};
 				var msg = await MessageSchema.create(msgInfo);
 				console.log(msg);
