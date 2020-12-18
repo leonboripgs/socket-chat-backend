@@ -186,8 +186,9 @@ module.exports.sendDm = async function (req, res) {
 				}
 				let otherUserUUID = room.user == req.body.from ? room.otherUser : room.user;
 				let otherUser = await UserSchema.findOne({"uuid": otherUserUUID});
+				console.log(otherUser);
 				var encryptedFileName = "";
-				if (req.file.filename != "") {
+				if (req.file) {
 					const cipher = crypto.createCipheriv('aes-128-gcm', room.symmetric, room.symmetric);
 					encryptedFileName = Buffer.concat([cipher.update(Buffer.from(req.file.filename)), cipher.final()]).toString('hex');
 					console.log(encryptedFileName.toString());
