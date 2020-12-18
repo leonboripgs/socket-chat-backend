@@ -176,7 +176,7 @@ module.exports.sendDm = async function (req, res) {
 			try {
 				let room = await RoomSchema.findOne({"_id": req.body.roomId});
 				if(!room) {
-					res.status(201).json({success: false, message: "Invalid room"});;
+					res.status(201).json({success: false, message: "Invalid room"});
 					return;
 				}
 				let user = await UserSchema.findOne({"uuid": req.body.from});
@@ -184,39 +184,28 @@ module.exports.sendDm = async function (req, res) {
 					res.status(201).json({success: false, message: "From User does not exist"});;
 					return;
 				}
-
-				// console.log(req.body.memo);
-				// var symmetricUtf = Buffer.from(room.symmetric, 'utf8');
-				// const dechiper = crypto.createCipheriv('aes-128-gcm', symmetricUtf, symmetricUtf);
-				// var decrypted = Buffer.concat([dechiper.update(Buffer.from(req.body.memo, 'hex')), dechiper.final()]);
-				// console.log("=====================");
-				// console.log(decrypted.toString());
-
-				let files = [];
-				// console.log(req.files);
-				// req.files.forEach(eachFile => {
-				// 	files.push("dms/" + eachFile.filename);
-				// });
-
+				let otherUserUUID = room.user == req.body.from ? room.otherUser : room.user;
+				let otherUser = await UserSchema.findOne({"uuid": otherUserUUID});
 				var encryptedFileName = "";
-				const cipher = crypto.createCipheriv('aes-128-gcm', room.symmetric, room.symmetric);
-				
 				if (req.file.filename != "") {
+					const cipher = crypto.createCipheriv('aes-128-gcm', room.symmetric, room.symmetric);
 					encryptedFileName = Buffer.concat([cipher.update(Buffer.from(req.file.filename)), cipher.final()]).toString('hex');
 					console.log(encryptedFileName.toString());
 				}
+
 				var msgInfo = {
 					roomId: req.body.roomId,
 					from: req.body.from,
 					memo: req.body.memo ? req.body.memo : "",
 					type: req.body.type ? req.body.type : "0",
-					attachment: req.file.filename? req.file.filename : ''//encryptedFileName.toString(),
+					attachment: encryptedFileName,
 				};
 				var msg = await MessageSchema.create(msgInfo);
 				console.log(msg);
 				return res.status(200).json({
 					success: true,
-					msg: msg
+					msg: msg,
+					fcm_token: otherUser.fcm_token
 				})
 			} catch(error) {
 				console.log(error);

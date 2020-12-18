@@ -9,6 +9,7 @@ const UserSchema = new Schema({
   photo: {type: String, default: ""},
   symmetric: {type: String, default: ""},
   permission: {type: String, default: "1"},
+  fcm_token: {type: String, default: ""},
   created_at: { type: Date, default: Date.now()},
   updated_at: { type: Date, default: Date.now()},
 });

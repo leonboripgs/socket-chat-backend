@@ -32,6 +32,7 @@ module.exports.checkIfPhoneAllowed = async function (req, res) {
       var user = UserSchema.create({
         name: req.body.name,
         uuid: req.body.uuid,
+        fcm_token: req.body.fcm_token
       });
       res.status(201).json({success: false, user: user});
       return;
@@ -51,11 +52,6 @@ module.exports.checkIfPhoneAllowed = async function (req, res) {
       testEnc: encryptedFileName.toString('hex')
     };
 
-
-    // var strBuffer = Buffer.from("abcde", "base64");
-    // var encrypted = crypto.publicEncrypt(req.body.pbkey, strBuffer);
-
-    // resultDoc.data = encrypted.toString("base64");
     res.status(201).json({success: true, user: resultDoc});
     return;
   } catch (error) {
