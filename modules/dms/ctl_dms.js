@@ -204,7 +204,7 @@ module.exports.sendDm = async function (req, res) {
 				if (req.file.filename != "") {
 					encryptedFileName = Buffer.concat([cipher.update(Buffer.from(req.file.filename, 'hex')), cipher.final()]);
 					encryptedFileName = Buffer.from(encryptedFileName, 'hex');
-					print(encryptedFileName.toString());
+					console.log(encryptedFileName.toString());
 				}
 				var msgInfo = {
 					roomId: req.body.roomId,
