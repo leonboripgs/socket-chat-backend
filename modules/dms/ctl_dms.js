@@ -202,7 +202,7 @@ module.exports.sendDm = async function (req, res) {
 				const cipher = crypto.createCipheriv('aes-128-gcm', room.symmetric, room.symmetric);
 				var encryptedFileName = "";
 				if (req.file.filename != "")
-					encryptedFileName = Buffer.concat([dechiper.update(Buffer.from(req.file.filename, 'hex')), cipher.final()]);
+					encryptedFileName = Buffer.concat([cipher.update(Buffer.from(req.file.filename, 'hex')), cipher.final()]);
 				var msgInfo = {
 					roomId: req.body.roomId,
 					from: req.body.from,
