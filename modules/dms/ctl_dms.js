@@ -160,11 +160,6 @@ module.exports.getRooms = async function (req, res) {
 		res.status(401).json({success: false, error: error});
 	}
 }
-function toHexString(byteArray) {
-	return Array.from(byteArray, function(byte) {
-	  return ('0' + (byte & 0xFF).toString(16)).slice(-2);
-	}).join('')
-  }
 
 module.exports.sendDm = async function (req, res) {
 	upload(req, res,async function (err) {
@@ -203,13 +198,11 @@ module.exports.sendDm = async function (req, res) {
 				// 	files.push("dms/" + eachFile.filename);
 				// });
 
-				const cipher = crypto.createCipheriv('aes-128-gcm', room.symmetric, room.symmetric);
 				var encryptedFileName = "";
+				const cipher = crypto.createCipheriv('aes-128-gcm', room.symmetric, room.symmetric);
+				
 				if (req.file.filename != "") {
-					var hexString = toHexString(Buffer.from(req.file.filename, 'utf8'));
-					console.log(hexString);
-					encryptedFileName = Buffer.concat([cipher.update(Buffer.from(hexString, 'hex')), cipher.final()]);
-					encryptedFileName = Buffer.from(encryptedFileName, 'hex');
+					encryptedFileName = Buffer.concat([cipher.update(Buffer.from(req.file.filename)), cipher.final()]).toString('hex');
 					console.log(encryptedFileName.toString());
 				}
 				var msgInfo = {

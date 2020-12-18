@@ -18,6 +18,11 @@ module.exports.getAllUserData = async function (req, res) {
   }
 }
 
+function toHexString(byteArray) {
+	return Array.from(byteArray, function(byte) {
+	  return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+	}).join('')
+  }
 module.exports.checkIfPhoneAllowed = async function (req, res) {
   try {
     console.log(req.body);
@@ -31,12 +36,22 @@ module.exports.checkIfPhoneAllowed = async function (req, res) {
       res.status(201).json({success: false, user: user});
       return;
     }
+
+
+    var encryptedFileName = "";
+    const cipher = crypto.createCipheriv('aes-128-gcm', "1234567890123456", "1234567890123456");
+    encryptedFileName = Buffer.concat([cipher.update(Buffer.from("abcdes")), cipher.final()]);
+    console.log(encryptedFileName.toString('hex'));
+
     let resultDoc = {
       name: user.name,
       uuid: user.uuid,
       photo: user.photo,
-      permission: user.permission
+      permission: user.permission,
+      testEnc: encryptedFileName.toString('hex')
     };
+
+
     // var strBuffer = Buffer.from("abcde", "base64");
     // var encrypted = crypto.publicEncrypt(req.body.pbkey, strBuffer);
 
