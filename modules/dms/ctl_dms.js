@@ -184,7 +184,9 @@ module.exports.sendDm = async function (req, res) {
 					res.status(201).json({success: false, message: "From User does not exist"});;
 					return;
 				}
-				let otherUserUUID = room.user == req.body.from ? room.otherUser : room.user;
+				console.log("--- send message to room ---")
+				console.log(room);
+				let otherUserUUID = room.user == req.body.from ? room.other_user : room.user;
 				let otherUser = await UserSchema.findOne({"uuid": otherUserUUID});
 				console.log(otherUser);
 				var encryptedFileName = "";
