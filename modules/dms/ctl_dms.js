@@ -201,14 +201,17 @@ module.exports.sendDm = async function (req, res) {
 
 				const cipher = crypto.createCipheriv('aes-128-gcm', room.symmetric, room.symmetric);
 				var encryptedFileName = "";
-				if (req.file.filename != "")
+				if (req.file.filename != "") {
 					encryptedFileName = Buffer.concat([cipher.update(Buffer.from(req.file.filename, 'hex')), cipher.final()]);
+					encryptedFileName = Buffer.from(encryptedFileName, 'hex');
+					print(encryptedFileName.toString());
+				}
 				var msgInfo = {
 					roomId: req.body.roomId,
 					from: req.body.from,
 					memo: req.body.memo ? req.body.memo : "",
 					type: req.body.type ? req.body.type : "0",
-					attachment: encryptedFileName,
+					attachment: encryptedFileName.toString(),
 				};
 				var msg = await MessageSchema.create(msgInfo);
 				console.log(msg);
