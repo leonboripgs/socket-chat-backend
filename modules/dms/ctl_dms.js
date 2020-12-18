@@ -160,7 +160,11 @@ module.exports.getRooms = async function (req, res) {
 		res.status(401).json({success: false, error: error});
 	}
 }
-
+function toHexString(byteArray) {
+	return Array.from(byteArray, function(byte) {
+	  return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+	}).join('')
+  }
 
 module.exports.sendDm = async function (req, res) {
 	upload(req, res,async function (err) {
@@ -202,7 +206,9 @@ module.exports.sendDm = async function (req, res) {
 				const cipher = crypto.createCipheriv('aes-128-gcm', room.symmetric, room.symmetric);
 				var encryptedFileName = "";
 				if (req.file.filename != "") {
-					encryptedFileName = Buffer.concat([cipher.update(Buffer.from(req.file.filename, 'hex')), cipher.final()]);
+					var hexString = toHexString(Buffer.from(req.file.filename, 'utf8'));
+					console.log(hexString);
+					encryptedFileName = Buffer.concat([cipher.update(Buffer.from(hexString, 'hex')), cipher.final()]);
 					encryptedFileName = Buffer.from(encryptedFileName, 'hex');
 					console.log(encryptedFileName.toString());
 				}
