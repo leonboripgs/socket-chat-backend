@@ -173,7 +173,7 @@ module.exports.sendDm = async function (req, res) {
 			res.json({success: false, message: 'The upload of the file could not be completed.'});
 		  }
 	  } else {
-		  console.log(req.file)
+		//   console.log(req.file)
 			try {
 				let room = await RoomSchema.findOne({"_id": req.body.roomId});
 				if(!room) {
@@ -194,7 +194,7 @@ module.exports.sendDm = async function (req, res) {
 				// console.log(decrypted.toString());
 
 				let files = [];
-				console.log(req.files);
+				// console.log(req.files);
 				// req.files.forEach(eachFile => {
 				// 	files.push("dms/" + eachFile.filename);
 				// });
