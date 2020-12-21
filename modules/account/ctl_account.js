@@ -36,20 +36,17 @@ module.exports.checkIfPhoneAllowed = async function (req, res) {
       });
       res.status(201).json({success: false, user: user});
       return;
+    } else {
+      user.fcm_token = req.body.fcm_token
+      user = await user.save();
     }
-
-
-    var encryptedFileName = "";
-    const cipher = crypto.createCipheriv('aes-128-gcm', "1234567890123456", "1234567890123456");
-    encryptedFileName = Buffer.concat([cipher.update(Buffer.from("abcdes")), cipher.final()]);
-    console.log(encryptedFileName.toString('hex'));
 
     let resultDoc = {
       name: user.name,
       uuid: user.uuid,
       photo: user.photo,
       permission: user.permission,
-      testEnc: encryptedFileName.toString('hex')
+      fcm_token: user.fcm_token
     };
 
     res.status(201).json({success: true, user: resultDoc});
