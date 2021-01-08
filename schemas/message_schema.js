@@ -8,7 +8,7 @@ const MessageSchema = new Schema({
   from: { type: String, required: true },
   memo: String,
   type: { type: String, default: "0" },
-  fileContent: { type: String, default: "" },
+  fileContent: String,
   status: String,
   attachment: String,
   created_at: { type: Date, default: Date.now() },
